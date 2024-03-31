@@ -1,6 +1,4 @@
 /*
- * list-tests.h
- *
  * Déclarations des tests unitaires pour les fonctions de la liste
  */
 
@@ -21,8 +19,5 @@ void test_1_11_append_list_with_list_non_null(void);
 void test_1_12_prepend_list_with_list_null(void);
 void test_1_13_prepend_list_with_list_non_null(void);
 
-/**
- * vim: et:ts=4:sw=4:sts=4
- * -*- mode: C; coding: utf-8-unix; tab-width: 4; tab-always-indent: t; tab-first-completion: nil -*-
- */
+
 
