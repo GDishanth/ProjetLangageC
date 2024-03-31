@@ -1,126 +1,184 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <assert.h>
-#include "list.h"
 
+// Structure d'un nœud de la liste chaînée
+struct Node {
+    int data;           // Donnée du nœud
+    struct Node* next;  // Pointeur vers le prochain nœud dans la liste
+};
 
-struct element * createlist (int val) {
-    struct element *newlist = malloc(sizeof(struct element));
-    newlist -> value = val;
-    newlist -> pointer = NULL;
-    return newlist;
-}
+// Alias pour simplifier l'utilisation de la structure
+typedef struct Node Node;
 
-bool listisempty (struct element *list) {
-    return list == NULL;
-}
+// Pointeur vers le début de la liste
+Node* head = NULL;
 
-int lenlist (struct element *list) {
-    int len = 0;
-    while (!listisempty(list)) {
-        list = list -> pointer;
-        len += 1;
+/*
+ * Libère la mémoire occupée par tous les nœuds de la liste.
+ */
+void free_list() {
+    Node* current = head;
+    Node* next;
+
+    while (current != NULL) {
+        next = current->next;  // Sauvegarde du pointeur vers le prochain nœud
+        free(current);         // Libération de la mémoire du nœud actuel
+        current = next;        // Déplacement vers le prochain nœud
     }
-    return len;
+
+    head = NULL;  // Réinitialisation du pointeur de tête à NULL
 }
 
-void printlist(struct element *list) {
-    printf("--- MY LIST ---\n");
-    while (!listisempty(list)) {
-        printf("%d\n", list -> value);
-        list = list -> pointer;
+/*
+ * Initialise la liste en la vidant.
+ */
+void init_list() {
+    free_list();  // Libère la mémoire occupée par la liste actuelle
+}
+
+/*
+ * Affiche tous les éléments de la liste.
+ */
+void display_list() {
+    if (head == NULL) {
+        printf("Empty list\n");
+        return;
     }
-    printf("--- END ---\n");
-}
 
-void debuglist(struct element *list) {
-    int i = 0;
-    printf("--- DEBUGGING LIST ---\n");
-    printf("--- LEN LIST --\n");
-    printf("%d\n", lenlist(list));
-    while (!listisempty(list)) {
-        printf("--- INDEX %d ---\n", i);
-        printf("Value : %d\n", list -> value);
-        if (!(list -> pointer == NULL)) {
-            printf("Pointing on : %d\n", list -> pointer -> value);
+    printf("List: [");
+    Node* current = head;
+    while (current != NULL) {
+        printf("%d", current->data);
+        if (current->next != NULL) {
+            printf(", ");
         }
-        i += 1;
-        list = list -> pointer;
+        current = current->next;
+    }
+    printf("]\n");
+}
+
+/*
+ * Charge une liste chaînée à partir d'un fichier.
+ */
+void load_list(char* filename) {
+    // À implémenter
+}
+
+/*
+ * Sauvegarde la liste chaînée dans un fichier.
+ */
+void save_list(char* filename) {
+    // À implémenter
+}
+
+/*
+ * Ajoute un élément à la fin de la liste.
+ */
+void append_list(int data) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    if (new_node == NULL) {
+        printf("Memory allocation failed\n");
+        return;
+    }
+    new_node->data = data;
+    new_node->next = NULL;
+
+    if (head == NULL) {
+        head = new_node;
+    } else {
+        Node* current = head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = new_node;
     }
 }
 
-struct element * indexlist(struct element *list, int idx) {
-    assert(idx >= 0 && idx < lenlist(list));
-    for (int i = 0; i < idx; i++) {
-        list = list -> pointer;
+/*
+ * Supprime le dernier élément de la liste.
+ */
+void delete_end_of_list() {
+    if (head == NULL) {
+        printf("Empty list\n");
+        return;
     }
-    return list;
+
+    if (head->next == NULL) {
+        free(head);
+        head = NULL;
+        return;
+    }
+
+    Node* current = head;
+    Node* previous = NULL;
+    while (current->next != NULL) {
+        previous = current;
+        current = current->next;
+    }
+    free(current);
+    previous->next = NULL;
 }
 
-void prependlist(struct element *list, int val) {
-    struct element *newlist = malloc(sizeof(struct element));
-    newlist -> value = list -> value;
-    newlist -> pointer = list -> pointer;
-    list -> value = val;
-    list -> pointer = newlist;
+/*
+ * Supprime le premier élément de la liste.
+ */
+void delete_start_of_list() {
+    if (head == NULL) {
+        printf("Empty list\n");
+        return;
+    }
 
+    Node* temp = head;
+    head = head->next;
+    free(temp);
 }
 
-void appendlist(struct element *list, int val) {
-    struct element *newlist = malloc(sizeof(struct element));
-    newlist -> value = val;
-    newlist -> pointer = NULL;
-    indexlist(list, lenlist(list) - 1) -> pointer = newlist;
+/*
+ * Supprime un élément spécifique de la liste.
+ */
+void delete_element(int data) {
+    if (head == NULL) {
+        printf("Empty list\n");
+        return;
+    }
+
+    Node* current = head;
+    Node* previous = NULL;
+
+    // Recherche de l'élément à supprimer
+    while (current != NULL && current->data != data) {
+        previous = current;
+        current = current->next;
+    }
+
+    if (current == NULL) {
+        printf("Element not found\n");
+        return;
+    }
+
+    // Si l'élément à supprimer est en tête de liste
+    if (current == head) {
+        head = head->next;
+    } else {
+        previous->next = current->next;
+    }
+
+    free(current);
 }
 
-void deletefirst(struct element *list) {
-    int tmpvalue = indexlist(list, 1) -> value;
-    struct element *tmpptr = indexlist(list, 1) -> pointer;
-    free(indexlist(list, 1));
-    list -> value = tmpvalue;
-    list -> pointer = tmpptr;
-}
+// Fonction principale
+int main() {
+    // Exemple d'utilisation des fonctions de manipulation de la liste
+    append_list(1);
+    append_list(2);
+    append_list(3);
+    display_list();
+    delete_start_of_list();
+    display_list();
+    delete_end_of_list();
+    display_list();
+    delete_element(2);
+    display_list();
 
-void deletelast(struct element *list) {
-    int len = lenlist(list);
-    struct element *tmpptr = indexlist(list, len - 1);
-    indexlist(list, len - 2) -> pointer = NULL;
-    free(tmpptr);
-}
-
-void addelement(struct element *list, int idx, int val) {
-    if (idx == 0) {
-        prependlist(list, val);
-    }
-    else if (idx > 0 && idx < (lenlist(list) - 1)) {
-        struct element *newelement = malloc(sizeof(struct element));
-        newelement -> value = val;
-        newelement -> pointer = indexlist(list, idx);
-        indexlist(list, idx - 1) -> pointer = newelement;
-    }
-    else if (idx == (lenlist(list) - 1)) {
-        appendlist(list, val);
-    }
-    else {
-        assert(1 != 1);
-    }
-}
-
-void removeelement(struct element *list, int idx) {
-    if (idx == 0) {
-        deletefirst(list);
-    }
-    else if (idx > 0 && idx < (lenlist(list) - 1)) {
-        struct element *tmpptr = indexlist(list, idx - 1);
-        struct element *tmpptr2 = tmpptr -> pointer;
-        tmpptr -> pointer = tmpptr2 -> pointer;
-        free(tmpptr2);
-    }
-    else if (idx == (lenlist(list) - 1)) {
-        deletelast(list);
-    }
-    else {
-        assert(1 != 1);
-    }
+    return 0;
 }
