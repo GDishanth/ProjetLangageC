@@ -30,8 +30,3 @@ void test_1_2_reinit_list(void) {
 }
 
 /* Autres tests similaires pour les autres fonctions... */
-
-/**
- * vim: et:ts=4:sw=4:sts=4
- * -*- mode: C; coding: utf-8-unix; tab-width: 4; tab-always-indent: t; tab-first-completion: nil -*-
- */
